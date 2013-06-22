@@ -1,6 +1,6 @@
 # iota #
 
-![Build Status](https://travis-ci.org/kwiniarski/iota.png) https://travis-ci.org/kwiniarski/iota
+[![Build Status](https://travis-ci.org/kwiniarski/iota.png)](https://travis-ci.org/kwiniarski/iota "Build Status")
 
 iota is a set of small JavaScript modules designed for speed, extendibility and modular applications development. Compatible with Nodejs, RequireJS and jQuery.
 
