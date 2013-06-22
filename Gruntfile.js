@@ -1,0 +1,92 @@
+'use strict';
+module.exports = function (grunt) {
+    // load all grunt tasks
+    require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
+
+
+    grunt.initConfig({
+        pkg: grunt.file.readJSON('package.json'),
+        watch: {
+			all: {
+				files: [
+					'src/**/*.js',
+					'tests/**/*.js'
+				],
+				tasks: [
+					'jshint:all',
+					'karma:server:run'
+				],
+				options: {
+					nospawn: true
+				}
+			}
+        },
+		benchmark: {
+			all: {
+				src: ['benchmarks/*.js']
+			}
+		},
+        jshint: {
+            options: {
+                jshintrc: '.jshintrc'
+            },
+            all: [
+                'Gruntfile.js',
+                'src/**/*.js',
+                'tests/**/*.js'
+            ]
+        },
+
+		karma: {
+			options: {
+				configFile: 'karma.conf.js'
+			},
+			all: {
+				singleRun: true
+			},
+			server: {
+				background: true
+			}
+		},
+
+        requirejs: {
+            dist: {
+                // Options: https://github.com/jrburke/r.js/blob/master/build/example.build.js
+                options: {
+                    // `name` and `out` is set by grunt-usemin
+                    baseUrl: 'app/scripts',
+                    optimize: 'none',
+                    // TODO: Figure out how to make sourcemaps work with grunt-usemin
+                    // https://github.com/yeoman/grunt-usemin/issues/30
+                    //generateSourceMaps: true,
+                    // required to support SourceMaps
+                    // http://requirejs.org/docs/errors.html#sourcemapcomments
+                    preserveLicenseComments: false,
+                    useStrict: true,
+                    wrap: true
+                    //uglify2: {} // https://github.com/mishoo/UglifyJS2
+                }
+            }
+        }
+
+    });
+
+
+    grunt.registerTask('server', [
+		'karma:server',
+		'watch'
+    ]);
+
+    grunt.registerTask('test', [
+		'jshint',
+		'karma:all'
+    ]);
+
+    grunt.registerTask('build', [
+
+    ]);
+
+    grunt.registerTask('default', [
+
+    ]);
+};
