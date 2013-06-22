@@ -15,7 +15,7 @@ files = [
 
   {pattern: 'src/**/*.js', included: false},
   {pattern: 'tests/**/*Spec.js', included: false},
-  
+
   'tests/ipsum.js',
   'tests/init.js'
 ];
@@ -23,13 +23,13 @@ files = [
 
 // list of files to exclude
 exclude = [
-  
+
 ];
 
 
 // test results reporter to use
 // possible values: 'dots', 'progress', 'junit'
-reporters = ['progress', 'junit'];
+reporters = ['progress'];
 
 
 // web server port
@@ -70,15 +70,4 @@ captureTimeout = 60000;
 
 // Continuous Integration mode
 // if true, it capture browsers, run tests and exit
-singleRun = false;
-
-//plugins: [
-//	'karma-jasmine',
-//	'karma-requirejs',
-//	
-//	'karma-phantomjs-launcher',
-//	'karma-chrome-launcher',
-//	'karma-firefox-launcher',
-//	
-//	'karma-junit-reporter'
-//];
+singleRun = true;
