@@ -21,11 +21,6 @@ module.exports = function (grunt) {
 				}
 			}
         },
-		benchmark: {
-			all: {
-				src: ['benchmarks/*.js']
-			}
-		},
         jshint: {
             options: {
                 jshintrc: '.jshintrc'

@@ -1,17 +1,20 @@
 {
-  "name": "tools",
-  "version": "0.0.0",
-  "dependencies": {},
-  "devDependencies": {
-    "grunt-contrib-jshint": "~0.5.4",
-    "grunt-contrib-watch": "~0.4.4",
-    "grunt": "~0.4.1",
-    "grunt-contrib-requirejs": "~0.4.1",
-    "grunt-karma": "~0.4.4",
-    "matchdep": "~0.1.2",
-    "grunt-benchmark": "~0.2.0"
-  },
-  "engines": {
-    "node": ">=0.10.0"
-  }
+	"name": "iota",
+	"version": "0.0.1",
+	"dependencies": {},
+	"devDependencies": {
+		"grunt": "~0.4.1",
+		"grunt-contrib-jshint": "~0.5.4",
+		"grunt-contrib-watch": "~0.4.4",
+		"grunt-contrib-requirejs": "~0.4.1",
+		"grunt-karma": "~0.4.4",
+		"matchdep": "~0.1.2",
+		"karma": "~0.8.6"
+	},
+	"engines": {
+		"node": ">=0.10.0"
+	},
+	"scripts": {
+		"test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
+	}
 }
