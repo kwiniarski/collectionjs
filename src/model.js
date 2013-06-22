@@ -42,13 +42,31 @@
 		return serialized.length ? serialized.split(/\s*,\s*/g) : [];
 	}
 
-	function matcher(values, tokens, mode) {
-		var test = params(values);
-		var list = params(tokens);
-		var matches = 0;
-		for(var k = 0, l = test.length; k < l; k++) {
-			for(var i = 0, j = list.length; i < j; i++) {
-				if ( test[k] === list[i] ) {
+	function equals(value, token) {
+		return value === token;
+	}
+
+	function compare(value, token) {
+		if ( token instanceof RegExp ) {
+			return token.test(value);
+		} else {
+			return value.indexOf(token) !== -1;
+		}
+	}
+
+	function matcher(values, tokens, mode, fn) {
+
+		var
+
+		matches = 0,
+		test = params(values),
+		list = params(tokens);
+
+		fn = fn || equals;
+
+		for ( var k = 0, l = test.length; k < l; k++ ) {
+			for ( var i = 0, j = list.length; i < j; i++ ) {
+				if ( fn(test[k], list[i]) ) {
 					if ( mode === MATCH_ANY ) {
 						return true;
 					} else {
@@ -114,19 +132,12 @@
 		},
 		/**
 		 * Checks if string or element of an array contains some string.
-		 * @param {type} value
-		 * @param {type} token
+		 * @param {type} values
+		 * @param {type} tokens
 		 * @returns {Boolean}
 		 */
-		contains: function(value, token) {
-			var list = params(value);
-			var length = list.length;
-			while ( length ) {
-				if ( list[--length].indexOf(token) !== -1 ) {
-					return true;
-				}
-			}
-			return false;
+		contains: function(values, tokens) {
+			return matcher(values, tokens, MATCH_ANY, compare);
 		},
 		/**
 		 *

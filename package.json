@@ -1,42 +1,43 @@
 {
-	"name": "iota",
-	"version": "0.0.1",
-	"author": "Krzysztof Winiarski <winiarski.krzysztof@gmail.com>",
-	"description": "iota is a set of small JavaScript modules designed for speed, extendibility and modular applications development. Compatible with Nodejs, RequireJS and jQuery.",
-	"contributors": [
-		{
-			"name": "Krzysztof Winiarski",
-			"email": "winiarski.krzysztof@gmail.com"
-		}
-	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/kwiniarski/iota.git"
-	},
-	"keywords": [
-		"node",
-		"requirejs",
-		"jquery",
-		"modules",
-		"json",
-		"model",
-		"templates"
-	],
-	"dependencies": {},
-	"devDependencies": {
-		"grunt": "~0.4.1",
-		"grunt-contrib-jshint": "~0.5.4",
-		"grunt-contrib-watch": "~0.4.4",
-		"grunt-contrib-requirejs": "~0.4.1",
-		"grunt-karma": "~0.4.4",
-		"matchdep": "~0.1.2",
-		"karma": "~0.8.6"
-	},
-	"engines": {
-		"node": ">=0.10.0"
-	},
-	"license": "BSD",
-	"scripts": {
-		"test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
-	}
+  "name": "iota",
+  "version": "0.0.1",
+  "author": "Krzysztof Winiarski <winiarski.krzysztof@gmail.com>",
+  "description": "iota is a set of small JavaScript modules designed for speed, extendibility and modular applications development. Compatible with Nodejs, RequireJS and jQuery.",
+  "contributors": [
+    {
+      "name": "Krzysztof Winiarski",
+      "email": "winiarski.krzysztof@gmail.com"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kwiniarski/iota.git"
+  },
+  "keywords": [
+    "node",
+    "requirejs",
+    "jquery",
+    "modules",
+    "json",
+    "model",
+    "templates"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.5.4",
+    "grunt-contrib-watch": "~0.4.4",
+    "grunt-contrib-requirejs": "~0.4.1",
+    "grunt-karma": "~0.4.4",
+    "matchdep": "~0.1.2",
+    "karma": "~0.8.6",
+    "grunt-benchmark": "~0.2.0"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "license": "BSD",
+  "scripts": {
+    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
+  }
 }

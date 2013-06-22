@@ -28,7 +28,8 @@ module.exports = function (grunt) {
             all: [
                 'Gruntfile.js',
                 'src/**/*.js',
-                'tests/**/*.js'
+                'tests/**/*.js',
+                '!tests/**/*Perf.js'
             ]
         },
 
@@ -41,6 +42,16 @@ module.exports = function (grunt) {
 			},
 			server: {
 				background: true
+			}
+		},
+
+		benchmark: {
+			options: {
+				displayResults: true
+			},
+			all: {
+				src: ['tests/*Perf.js'],
+				dest: '.tmp/performance.csv'
 			}
 		},
 

@@ -23,7 +23,7 @@ files = [
 
 // list of files to exclude
 exclude = [
-
+	'tests/*Perf.js'
 ];
 
 
