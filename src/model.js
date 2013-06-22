@@ -1,8 +1,11 @@
-﻿'use strict';
+'use strict';
 (function(window) {
 
-	// http://jsperf.com/test-for-number
-//	var isNumber = /^\d*(\.\d+)?$/;
+	var
+
+	MATCH_ANY = 1,
+	MATCH_SOME = 2,
+	MATCH_ALL = 3;
 
 	function explore(path, object) {
 
@@ -39,24 +42,28 @@
 		return serialized.length ? serialized.split(/\s*,\s*/g) : [];
 	}
 
-//	function sort(a, b) {
-//		var diff = a - b;
-//		if (diff !== 0) {
-//			return (diff > 0) ? 1 : -1;
-//		} else {
-//			return 0;
-//		}
-//	}
-
-
-
-//	function toArray(data) {
-//		if (typeof data === 'string') {
-//			return data.split();
-//		}
-//		return data;
-//	}
-
+	function matcher(values, tokens, mode) {
+		var test = params(values);
+		var list = params(tokens);
+		var matches = 0;
+		for(var k = 0, l = test.length; k < l; k++) {
+			for(var i = 0, j = list.length; i < j; i++) {
+				if ( test[k] === list[i] ) {
+					if ( mode === MATCH_ANY ) {
+						return true;
+					} else {
+						matches++;
+						if ( mode === MATCH_SOME && matches === list.length ) {
+							return true;
+						} else if ( mode === MATCH_ALL && ( matches === list.length && matches === test.length ) ) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	}
 
 	function Model() {
 		var memory = {};
@@ -105,9 +112,6 @@
 		max: function(value, max) {
 			return value < max;
 		},
-		equals: function(value, token) {
-			return value === token;
-		},
 		/**
 		 * Checks if string or element of an array contains some string.
 		 * @param {type} value
@@ -125,48 +129,49 @@
 			return false;
 		},
 		/**
+		 *
+		 * [A,B,C].all(A) => false
+		 * [A,B,C].all(A,B,C) => true
+		 * [A,B,C].all(D) => false
+		 * [A,B,C].all(A,D,E) => false
+		 *
+		 * @param {type} values
+		 * @param {type} tokens
+		 * @returns {unresolved}
+		 */
+		all: function(values, tokens) {
+			return matcher(values, tokens, MATCH_ALL);
+		},
+		/**
 		 * Checks if string value or any element of an array matches at least one of provided tokens.
-		 * @param {type} value
-		 * @param {type} token
+		 *
+		 * [A,B,C].any(A) => true
+		 * [A,B,C].any(A,B,C) => true
+		 * [A,B,C].any(D) => false
+		 * [A,B,C].any(A,D,E) => true
+		 *
+		 * @param {type} values
+		 * @param {type} tokens
 		 * @returns {Boolean}
 		 */
-		any: function(value, tokens) {
-			var test = params(value);
-			var list = params(tokens);
-			for(var k = 0, l = test.length; k < l; k++) {
-				for(var i = 0, j = list.length; i < j; i++) {
-					if ( test[k] === list[i] ) {
-						return true;
-					}
-				}
-			}
-			return false;
+		any: function(values, tokens) {
+			return matcher(values, tokens, MATCH_ANY);
 		},
 		/**
 		 * Checks if elements of an array match all of provided tokens. This is not deep equal, so
 		 * not every element of the array has to have matching token. Examples:
 		 *
-		 * [A,B,C].all(C) => true
-		 * [A,B,C].all(A,C) => true
-		 * [A,B,C].all(D) => false
-		 * [A,B,C].all(A,D) => false
+		 * [A,B,C].some(A) => true
+		 * [A,B,C].some(A,B,C) => true
+		 * [A,B,C].some(D) => false
+		 * [A,B,C].some(A,D,E) => false
 		 *
-		 * @param {type} value
+		 * @param {type} values
 		 * @param {type} tokens
 		 * @returns {Boolean}
 		 */
-		all: function(value, tokens) {
-			var test = params(value);
-			var list = params(tokens);
-			var matches = 0;
-			for(var k = 0, l = test.length; k < l; k++) {
-				for(var i = 0, j = list.length; i < j; i++) {
-					if ( test[k] === list[i] ) {
-						matches++;
-					}
-				}
-			}
-			return matches === list.length;
+		some: function(values, tokens) {
+			return matcher(values, tokens, MATCH_SOME);
 		}
 	};
 	Model.sorters = {

@@ -251,7 +251,23 @@ define(['model','ipsum'], function(Model, ipsum) {
 
 		});
 
+		it('can filter records using all', function() {
+
+			// Quick tests
+			expect(Model.filters.all([1,2,3],[1,2,3])).toBeTruthy();
+			expect(Model.filters.all([1,2,3],[1,2,3,4])).toBeFalsy();
+			expect(Model.filters.all([1,2,3],[1,2])).toBeFalsy();
+
+		});
+
 		it('can filter records using any', function() {
+
+			// Quick tests
+			expect(Model.filters.any([1,2,3],[1,2,3])).toBeTruthy();
+			expect(Model.filters.any([1,2,3],[1,2,3,4])).toBeTruthy();
+			expect(Model.filters.any([1,2,3],[1,2])).toBeTruthy();
+			expect(Model.filters.any([1,2,3],[4,5,6])).toBeFalsy();
+			expect(Model.filters.any([1,2,3],[3,4,5,6])).toBeTruthy();
 
 			var res;
 			/**
@@ -326,16 +342,24 @@ define(['model','ipsum'], function(Model, ipsum) {
 
 		});
 
-		it('can filter records using all', function() {
+		it('can filter records using some', function() {
 
 			var res;
 
+			// Quick tests
+			expect(Model.filters.some([1,2,3],[1,2,3])).toBeTruthy();
+			expect(Model.filters.some([1,2,3],[1,2,3,4])).toBeFalsy();
+			expect(Model.filters.some([1,2,3],[1,2])).toBeTruthy();
+			expect(Model.filters.some([1,2,3],[4,5,6])).toBeFalsy();
+			expect(Model.filters.some([1,2,3],[3,4,5,6])).toBeFalsy();
+
+			// Test on object
 			items.indexCreate('friends','friends.*.name','array');
 
 			// Find all people who who has Autumn Ogden as a friend
 			// NOTE: for single element it would be better to use equals
 			res = items
-				.filter({ friends: { all: 'Autumn Ogden' } })
+				.filter({ friends: { some: 'Autumn Ogden' } })
 				.sort('friends')
 				.get('name', 'friends.*.name');
 
@@ -347,7 +371,7 @@ define(['model','ipsum'], function(Model, ipsum) {
 
 			// Find all people who who has Autumn Ogden AND Ella Goldman as a friend
 			res = items
-				.filter({ friends: { all: ['Autumn Ogden', 'Ella Goldman'] } })
+				.filter({ friends: { some: ['Autumn Ogden', 'Ella Goldman'] } })
 				.sort('friends')
 				.get('name', 'friends.*.name');
 
@@ -358,7 +382,7 @@ define(['model','ipsum'], function(Model, ipsum) {
 
 			// Find all people who who has Autumn Ogden AND Ella Goldman AND Kaitlyn Warren as a friend
 			res = items
-				.filter({ friends: { all: ['Autumn Ogden', 'Ella Goldman', 'Kaitlyn Warren'] } })
+				.filter({ friends: { some: ['Autumn Ogden', 'Ella Goldman', 'Kaitlyn Warren'] } })
 				.sort('friends')
 				.get('name', 'friends.*.name');
 
