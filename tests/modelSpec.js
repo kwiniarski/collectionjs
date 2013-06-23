@@ -254,20 +254,20 @@ define(['model','ipsum'], function(Model, ipsum) {
 		it('can filter records using all', function() {
 
 			// Quick tests
-			expect(Model.filters.all([1,2,3],[1,2,3])).toBeTruthy();
-			expect(Model.filters.all([1,2,3],[1,2,3,4])).toBeFalsy();
-			expect(Model.filters.all([1,2,3],[1,2])).toBeFalsy();
+			expect(Model.filters.has.all([1,2,3],[1,2,3])).toBeTruthy();
+			expect(Model.filters.has.all([1,2,3],[1,2,3,4])).toBeFalsy();
+			expect(Model.filters.has.all([1,2,3],[1,2])).toBeFalsy();
 
 		});
 
 		it('can filter records using any', function() {
 
 			// Quick tests
-			expect(Model.filters.any([1,2,3],[1,2,3])).toBeTruthy();
-			expect(Model.filters.any([1,2,3],[1,2,3,4])).toBeTruthy();
-			expect(Model.filters.any([1,2,3],[1,2])).toBeTruthy();
-			expect(Model.filters.any([1,2,3],[4,5,6])).toBeFalsy();
-			expect(Model.filters.any([1,2,3],[3,4,5,6])).toBeTruthy();
+			expect(Model.filters.has.any([1,2,3],[1,2,3])).toBeTruthy();
+			expect(Model.filters.has.any([1,2,3],[1,2,3,4])).toBeTruthy();
+			expect(Model.filters.has.any([1,2,3],[1,2])).toBeTruthy();
+			expect(Model.filters.has.any([1,2,3],[4,5,6])).toBeFalsy();
+			expect(Model.filters.has.any([1,2,3],[3,4,5,6])).toBeTruthy();
 
 			var res;
 			/**
@@ -281,7 +281,7 @@ define(['model','ipsum'], function(Model, ipsum) {
 			items.indexCreate('friends','friends.*.name','array');
 
 			res = items
-				.filter({ name: { any: names } })
+				.filter({ name: { has: { any: names } } })
 				.sort('name')
 				.get('name');
 
@@ -290,7 +290,7 @@ define(['model','ipsum'], function(Model, ipsum) {
 
 
 			res = items
-				.filter({ friends: { any: names } })
+				.filter({ friends: { has: { any: names } } })
 				.sort('friends')
 				.get('name', 'friends.*.name');
 
@@ -303,7 +303,7 @@ define(['model','ipsum'], function(Model, ipsum) {
 
 			// Find all people who who has Autumn Ogden as a friend
 			res = items
-				.filter({ friends: { any: 'Autumn Ogden' } })
+				.filter({ friends: { has: { any: 'Autumn Ogden' } } })
 				.sort('friends')
 				.get('name', 'friends.*.name');
 
@@ -316,7 +316,7 @@ define(['model','ipsum'], function(Model, ipsum) {
 
 			// Find all people who who has Autumn Ogden OR Ella Goldman as a friend
 			res = items
-				.filter({ friends: { any: ['Autumn Ogden', 'Ella Goldman'] } })
+				.filter({ friends: { has: { any: ['Autumn Ogden', 'Ella Goldman'] } } })
 				.sort('friends')
 				.get('name', 'friends.*.name');
 
@@ -329,7 +329,7 @@ define(['model','ipsum'], function(Model, ipsum) {
 
 			// Find all people who who has Autumn Ogden OR Ella Goldman OR Kaitlyn Warren as a friend
 			res = items
-				.filter({ friends: { any: ['Autumn Ogden', 'Ella Goldman', 'Kaitlyn Warren'] } })
+				.filter({ friends: { has: { any: ['Autumn Ogden', 'Ella Goldman', 'Kaitlyn Warren'] } } })
 				.sort('friends')
 				.get('name', 'friends.*.name');
 
@@ -347,11 +347,11 @@ define(['model','ipsum'], function(Model, ipsum) {
 			var res;
 
 			// Quick tests
-			expect(Model.filters.some([1,2,3],[1,2,3])).toBeTruthy();
-			expect(Model.filters.some([1,2,3],[1,2,3,4])).toBeFalsy();
-			expect(Model.filters.some([1,2,3],[1,2])).toBeTruthy();
-			expect(Model.filters.some([1,2,3],[4,5,6])).toBeFalsy();
-			expect(Model.filters.some([1,2,3],[3,4,5,6])).toBeFalsy();
+			expect(Model.filters.has.some([1,2,3],[1,2,3])).toBeTruthy();
+			expect(Model.filters.has.some([1,2,3],[1,2,3,4])).toBeFalsy();
+			expect(Model.filters.has.some([1,2,3],[1,2])).toBeTruthy();
+			expect(Model.filters.has.some([1,2,3],[4,5,6])).toBeFalsy();
+			expect(Model.filters.has.some([1,2,3],[3,4,5,6])).toBeFalsy();
 
 			// Test on object
 			items.indexCreate('friends','friends.*.name','array');
@@ -359,7 +359,7 @@ define(['model','ipsum'], function(Model, ipsum) {
 			// Find all people who who has Autumn Ogden as a friend
 			// NOTE: for single element it would be better to use equals
 			res = items
-				.filter({ friends: { some: 'Autumn Ogden' } })
+				.filter({ friends: { has: { some: 'Autumn Ogden' } } })
 				.sort('friends')
 				.get('name', 'friends.*.name');
 
@@ -371,7 +371,7 @@ define(['model','ipsum'], function(Model, ipsum) {
 
 			// Find all people who who has Autumn Ogden AND Ella Goldman as a friend
 			res = items
-				.filter({ friends: { some: ['Autumn Ogden', 'Ella Goldman'] } })
+				.filter({ friends: { has: { some: ['Autumn Ogden', 'Ella Goldman'] } } })
 				.sort('friends')
 				.get('name', 'friends.*.name');
 
@@ -382,7 +382,7 @@ define(['model','ipsum'], function(Model, ipsum) {
 
 			// Find all people who who has Autumn Ogden AND Ella Goldman AND Kaitlyn Warren as a friend
 			res = items
-				.filter({ friends: { some: ['Autumn Ogden', 'Ella Goldman', 'Kaitlyn Warren'] } })
+				.filter({ friends: { has: { some: ['Autumn Ogden', 'Ella Goldman', 'Kaitlyn Warren'] } } })
 				.sort('friends')
 				.get('name', 'friends.*.name');
 

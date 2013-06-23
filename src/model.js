@@ -5,9 +5,12 @@
 
 	MATCH_ANY = 1,
 	MATCH_SOME = 2,
-	MATCH_ALL = 3;
+	MATCH_ALL = 3,
 
-	function explore(path, object) {
+	slice = Array.prototype.slice,
+	split = /\s*,\s*/g,
+
+	explore = function(path, object) {
 
 		if (path.indexOf('.') === -1) {
 			if (object[path] !== undefined) {
@@ -26,7 +29,7 @@
 			}
 		}
 
-	}
+	},
 
 	/**
 	 * Creates array from object. All whihte space from the begining
@@ -37,24 +40,24 @@
 	 * @param {Array|String} args Arguments as an array or string.
 	 * @returns {Array} Parsed list of arguments.
 	 */
-	function params(args) {
-		var serialized = ( typeof args === 'string') ? args : Array.prototype.slice.call(args).toString();
-		return serialized.length ? serialized.split(/\s*,\s*/g) : [];
-	}
+	params = function(args) {
+		var serialized = ( typeof args === 'string') ? args : (slice.call(args)).toString();
+		return serialized.length ? serialized.split(split) : [];
+	},
 
-	function equals(value, token) {
+	equals = function(value, token) {
 		return value === token;
-	}
+	},
 
-	function compare(value, token) {
+	compare = function(value, token) {
 		if ( token instanceof RegExp ) {
 			return token.test(value);
 		} else {
 			return value.indexOf(token) !== -1;
 		}
-	}
+	},
 
-	function matcher(values, tokens, mode, fn) {
+	matcher = function(values, tokens, mode, fn) {
 
 		var
 
@@ -81,7 +84,7 @@
 			}
 		}
 		return false;
-	}
+	};
 
 	function Model() {
 		var memory = {};
@@ -130,59 +133,37 @@
 		max: function(value, max) {
 			return value < max;
 		},
-		/**
-		 * Checks if string or element of an array contains some string.
-		 * @param {type} values
-		 * @param {type} tokens
-		 * @returns {Boolean}
-		 */
+
 		contains: function(values, tokens) {
 			return matcher(values, tokens, MATCH_ANY, compare);
 		},
-		/**
-		 *
-		 * [A,B,C].all(A) => false
-		 * [A,B,C].all(A,B,C) => true
-		 * [A,B,C].all(D) => false
-		 * [A,B,C].all(A,D,E) => false
-		 *
-		 * @param {type} values
-		 * @param {type} tokens
-		 * @returns {unresolved}
-		 */
-		all: function(values, tokens) {
-			return matcher(values, tokens, MATCH_ALL);
+
+		has: {
+			all: function(values, tokens) {
+				return matcher(values, tokens, MATCH_ALL);
+			},
+
+			any: function(values, tokens) {
+				return matcher(values, tokens, MATCH_ANY);
+			},
+
+			some: function(values, tokens) {
+				return matcher(values, tokens, MATCH_SOME);
+			}
 		},
-		/**
-		 * Checks if string value or any element of an array matches at least one of provided tokens.
-		 *
-		 * [A,B,C].any(A) => true
-		 * [A,B,C].any(A,B,C) => true
-		 * [A,B,C].any(D) => false
-		 * [A,B,C].any(A,D,E) => true
-		 *
-		 * @param {type} values
-		 * @param {type} tokens
-		 * @returns {Boolean}
-		 */
-		any: function(values, tokens) {
-			return matcher(values, tokens, MATCH_ANY);
-		},
-		/**
-		 * Checks if elements of an array match all of provided tokens. This is not deep equal, so
-		 * not every element of the array has to have matching token. Examples:
-		 *
-		 * [A,B,C].some(A) => true
-		 * [A,B,C].some(A,B,C) => true
-		 * [A,B,C].some(D) => false
-		 * [A,B,C].some(A,D,E) => false
-		 *
-		 * @param {type} values
-		 * @param {type} tokens
-		 * @returns {Boolean}
-		 */
-		some: function(values, tokens) {
-			return matcher(values, tokens, MATCH_SOME);
+
+		not: {
+			all: function(values, tokens) {
+				return !matcher(values, tokens, MATCH_ALL);
+			},
+
+			any: function(values, tokens) {
+				return !matcher(values, tokens, MATCH_ANY);
+			},
+
+			some: function(values, tokens) {
+				return !matcher(values, tokens, MATCH_SOME);
+			}
 		}
 	};
 	Model.sorters = {
@@ -245,15 +226,28 @@
 			}
 			return this;
 		},
-		filter: function(options) {
-			for (var k = 0, f; undefined !== (f = this._filters[k]); k++) {
+		filter: function(indexes) {
+			// Reset filters
+			for ( var k = 0, f; undefined !== (f = this._filters[k]); k++ ) {
 				this._filters[k] = true;
 			}
-			for (var index in options) {
-				var filters = options[index];
-				for (var filter in filters) {
-					for (var i = 0, j; undefined !== (j = this.index[index][i]); i++) {
-						this._filters[i] = (this._filters[i] && Model.filters[filter](j, filters[filter]));
+			// Do filtering
+			for ( var index in indexes ) {
+
+				var filters = indexes[index];
+				var filtersRepository = Model.filters;
+
+				if ( filters.has ) {
+					filtersRepository = Model.filters.has;
+					filters = filters.has;
+				} else if ( filters.not ) {
+					filtersRepository = Model.filters.not;
+					filters = filters.not;
+				}
+
+				for ( var filter in filters ) {
+					for ( var i = 0, j; undefined !== (j = this.index[index][i]); i++ ) {
+						this._filters[i] = (this._filters[i] && filtersRepository[filter](j, filters[filter]));
 					}
 				}
 			}
