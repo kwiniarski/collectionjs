@@ -41,6 +41,7 @@ module.exports = function (grunt) {
 				singleRun: true
 			},
 			server: {
+				singleRun: false,
 				background: true
 			}
 		},
