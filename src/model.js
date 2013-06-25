@@ -175,13 +175,13 @@
 	};
 	Model.sorters = {
 		number: function(a, b) {
-			var diff = a - b;
-			return ( diff !== 0 ) ? ( ( diff > 0 ) ? 1 : -1 ) : 0;
+			return a - b;
 		},
 		string: function(a, b) {
-			return (''+a).localeCompare(''+b);
+			return a.localeCompare(b);
 		},
 		array: function(a, b) {
+			// Convert array to string before compare
 			return (''+a).localeCompare(''+b);
 		}
 	};
@@ -194,7 +194,17 @@
 				type: dataType
 			};
 			for (var key in this._data) {
-				this.index[indexName].push(explore(jsonPath, this._data[key]));
+				var value = explore(jsonPath, this._data[key]);
+				// Cast type on indexed values
+				switch ( dataType ) {
+					case 'number':
+						value = parseInt( value );
+						break;
+					case 'string':
+						value += '';
+						break;
+				}
+				this.index[indexName].push(value);
 			}
 		},
 		indexRebuild: function() {
@@ -202,7 +212,7 @@
 			this._index = [];
 
 			for (var key in this._data) {
-				key = ''+key;
+				key += '';
 				this._keys[key] = this._index.length;
 				this._index.push(key);
 			}
@@ -210,24 +220,32 @@
 		},
 		sort: function() {
 			var indexes = params(arguments);
-			var index = this.memory(indexes);
+			var sorters = {};
+			var keys = this._keys;
+			var cache = false;//this.memory(indexes);
 
-			if (index) {
-				this._index = index.slice();
+
+			if (cache) {
+				this._index = cache;
 			} else {
-				var self = this;
+
+				for (var i = 0, j; undefined !== (j = indexes[i]); i++) {
+					sorters[j] = {
+						engine: Model.sorters[this._mappings[j].type],
+						values: this.index[j]
+					};
+				}
+
 				this._index.sort(function(a, b) {
-					var aIndex = self._keys[a];
-					var bIndex = self._keys[b];
-					for (var d = 0, i = 0, j; undefined !== (j = indexes[i]); i++) {
-						var value = self.index[j];
-						var sorter = Model.sorters[(self._mappings[j] || {}).type || 'string'];
-						d = sorter(value[aIndex], value[bIndex]);
-						if (d !== 0) {
-							return d;
+					for ( var sorterName in sorters ) {
+						var sorter = sorters[sorterName];
+						var values = sorter.values;
+						var diff = sorter.engine(values[keys[a]], values[keys[b]]);
+						if (diff !== 0) {
+							return diff;
 						}
 					}
-					return d;
+					return 0;
 				});
 				this.memorize(indexes, this._index.slice());
 			}
@@ -285,7 +303,7 @@
 			var i, l;
 			if ( key !== undefined ) {
 
-				key = ''+ key;
+				key += '';
 
 				this.resetMemory();
 				this._data[key] = data;
