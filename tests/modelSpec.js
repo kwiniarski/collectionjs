@@ -163,7 +163,7 @@ define(['model','ipsum'], function(Model, ipsum) {
 
 			// Create index on age & sort using it
 			items.indexCreate('age','age','number');
-			items.sort(['age']);
+			items.sort('age');
 
 			expect(items.get('age')).toEqual([
 				25, 30, 35, 35, 39
@@ -202,7 +202,8 @@ define(['model','ipsum'], function(Model, ipsum) {
 				[ 'male', 39 ]
 			]);
 
-			items.sort(['age', 'gender']);
+			items.sort('age', 'gender');
+			items.sort('age', 'gender'); // Sort 2x (second should be from cache)
 
 			expect(items.get(['age', 'gender'])).toEqual([
 				[ 25, 'male' ],
