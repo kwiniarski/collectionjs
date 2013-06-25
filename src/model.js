@@ -10,7 +10,7 @@
 	slice = Array.prototype.slice,
 	split = /\s*,\s*/g,
 
-	explore = function(path, object) {
+	explore = function(path, object, collection) {
 
 		if (path.indexOf('.') === -1) {
 			if (object[path] !== undefined) {
@@ -20,13 +20,20 @@
 			var pathJson = path.split('.');
 			var key = pathJson.shift();
 			if ( key === '*' ) {
-				for ( var collection = [], i = 0, j = object.length; i < j; i++ ) {
-					collection.push(explore(pathJson, object[i]));
+				collection = collection || [];
+				for ( var i = 0, j = object.length; i < j; i++ ) {
+					var value = explore(pathJson.join('.'), object[i], collection);
+					if ( typeof value === 'string' ) {
+						collection.push(value);
+					}
 				}
 				return collection;
+
+
 			} else if (object[key] !== undefined) {
-				return explore(pathJson.join('.'), object[key]);
+				return explore(pathJson.join('.'), object[key], collection);
 			}
+
 		}
 
 	},
