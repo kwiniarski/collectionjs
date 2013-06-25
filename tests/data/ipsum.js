@@ -1,4 +1,4 @@
-define('ipsum', [], {
+define({
 	'id': 1,
 	'jsonrpc': '2.0',
 	'total': 5,

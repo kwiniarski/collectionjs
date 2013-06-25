@@ -197,12 +197,12 @@
 				var value = explore(jsonPath, this._data[key]);
 				// Cast type on indexed values
 				switch ( dataType ) {
-					case 'number':
-						value = parseFloat( value );
-						break;
-					case 'string':
-						value += '';
-						break;
+				case 'number':
+					value = parseFloat( value );
+					break;
+				case 'string':
+					value += '';
+					break;
 				}
 				this.index[indexName].push(value);
 			}

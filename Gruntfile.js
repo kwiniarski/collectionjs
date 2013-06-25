@@ -9,6 +9,8 @@ module.exports = function (grunt) {
         watch: {
 			all: {
 				files: [
+					'Gruntfile.js',
+					'karma.conf.js',
 					'src/**/*.js',
 					'tests/**/*.js'
 				],

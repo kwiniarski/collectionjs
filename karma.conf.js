@@ -14,9 +14,9 @@ files = [
   REQUIRE_ADAPTER,
 
   {pattern: 'src/**/*.js', included: false},
+  {pattern: 'tests/data/*.js', included: false},
   {pattern: 'tests/**/*Spec.js', included: false},
 
-  'tests/ipsum.js',
   'tests/init.js'
 ];
 

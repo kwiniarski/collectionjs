@@ -1,5 +1,4 @@
 'use strict';
-
 define(['model','data/ipsum'], function(Model, ipsum) {
 
     describe('Model working on array', function() {
