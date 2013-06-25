@@ -198,7 +198,7 @@
 				// Cast type on indexed values
 				switch ( dataType ) {
 					case 'number':
-						value = parseInt( value );
+						value = parseFloat( value );
 						break;
 					case 'string':
 						value += '';
