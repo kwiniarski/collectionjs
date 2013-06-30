@@ -145,33 +145,33 @@
 			return matcher(values, tokens, MATCH_ANY, compare);
 		},
 
-		has: {
-			all: function(values, tokens) {
-				return matcher(values, tokens, MATCH_ALL);
-			},
-
-			any: function(values, tokens) {
-				return matcher(values, tokens, MATCH_ANY);
-			},
-
-			some: function(values, tokens) {
-				return matcher(values, tokens, MATCH_SOME);
-			}
+//		has: {
+		all: function(values, tokens) {
+			return matcher(values, tokens, MATCH_ALL);
 		},
 
-		not: {
-			all: function(values, tokens) {
-				return !matcher(values, tokens, MATCH_ALL);
-			},
+		any: function(values, tokens) {
+			return matcher(values, tokens, MATCH_ANY);
+		},
 
-			any: function(values, tokens) {
-				return !matcher(values, tokens, MATCH_ANY);
-			},
-
-			some: function(values, tokens) {
-				return !matcher(values, tokens, MATCH_SOME);
-			}
+		some: function(values, tokens) {
+			return matcher(values, tokens, MATCH_SOME);
 		}
+//		},
+//
+//		not: {
+//			all: function(values, tokens) {
+//				return !matcher(values, tokens, MATCH_ALL);
+//			},
+//
+//			any: function(values, tokens) {
+//				return !matcher(values, tokens, MATCH_ANY);
+//			},
+//
+//			some: function(values, tokens) {
+//				return !matcher(values, tokens, MATCH_SOME);
+//			}
+//		}
 	};
 	Model.sorters = {
 		number: function(a, b) {
@@ -253,28 +253,41 @@
 		},
 		filter: function(indexes) {
 			// Reset filters
-			for ( var k = 0, f; undefined !== (f = this._filters[k]); k++ ) {
-				this._filters[k] = true;
+			var filtersIndexLength = this._filters.length,
+				filtersRepository = Model.filters,
+				filters, filter, index, i, j;
+
+			// Reset filters
+			while(filtersIndexLength--) {
+				this._filters[filtersIndexLength] = true;
 			}
+
 			// Do filtering
-			for ( var index in indexes ) {
+			for ( index in indexes ) {
 
-				var filters = indexes[index];
-				var filtersRepository = Model.filters;
+				filters = indexes[index];
 
-				if ( filters.has ) {
-					filtersRepository = Model.filters.has;
-					filters = filters.has;
-				} else if ( filters.not ) {
-					filtersRepository = Model.filters.not;
-					filters = filters.not;
-				}
-
-				for ( var filter in filters ) {
-					for ( var i = 0, j; undefined !== (j = this.index[index][i]); i++ ) {
-						this._filters[i] = (this._filters[i] && filtersRepository[filter](j, filters[filter]));
+				for ( filter in filters ) {
+					if ( filter === 'not' ) {
+						continue;
+					}
+					for ( i = 0, j; undefined !== (j = this.index[index][i]); i++ ) {
+						if ( this._filters[i] ) {
+							this._filters[i] = filtersRepository[filter](j, filters[filter]);
+						}
 					}
 				}
+
+				if ( filters.not ) {
+					for ( filter in filters.not ) {
+						for ( i = 0, j; undefined !== (j = this.index[index][i]); i++ ) {
+							if ( this._filters[i] ) {
+								this._filters[i] = !filtersRepository[filter](j, filters.not[filter]);
+							}
+						}
+					}
+				}
+
 			}
 			return this;
 		},
