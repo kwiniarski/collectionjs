@@ -1,5 +1,5 @@
 'use strict';
-(function(window) {
+(function() {
 
 	var
 
@@ -77,15 +77,9 @@
 		for ( var k = 0, l = test.length; k < l; k++ ) {
 			for ( var i = 0, j = list.length; i < j; i++ ) {
 				if ( fn(test[k], list[i]) ) {
-					if ( mode === MATCH_ANY ) {
+					matches++;
+					if ( mode === MATCH_ANY || ( matches === list.length && ( mode === MATCH_SOME || matches === test.length ) ) ) {
 						return true;
-					} else {
-						matches++;
-						if ( mode === MATCH_SOME && matches === list.length ) {
-							return true;
-						} else if ( mode === MATCH_ALL && ( matches === list.length && matches === test.length ) ) {
-							return true;
-						}
 					}
 				}
 			}
@@ -97,6 +91,7 @@
 		var memory = {};
 		this._data = {};
 		this.index = {},
+		this.filters = {},
 
 		/*
 		 * Index mappings (index name to used JSON path).
@@ -140,38 +135,18 @@
 		max: function(value, max) {
 			return value < max;
 		},
-
 		contains: function(values, tokens) {
 			return matcher(values, tokens, MATCH_ANY, compare);
 		},
-
-//		has: {
 		all: function(values, tokens) {
 			return matcher(values, tokens, MATCH_ALL);
 		},
-
 		any: function(values, tokens) {
 			return matcher(values, tokens, MATCH_ANY);
 		},
-
 		some: function(values, tokens) {
 			return matcher(values, tokens, MATCH_SOME);
 		}
-//		},
-//
-//		not: {
-//			all: function(values, tokens) {
-//				return !matcher(values, tokens, MATCH_ALL);
-//			},
-//
-//			any: function(values, tokens) {
-//				return !matcher(values, tokens, MATCH_ANY);
-//			},
-//
-//			some: function(values, tokens) {
-//				return !matcher(values, tokens, MATCH_SOME);
-//			}
-//		}
 	};
 	Model.sorters = {
 		number: function(a, b) {
@@ -187,11 +162,12 @@
 	};
 
 	Model.prototype = {
-		indexCreate: function(indexName, jsonPath, dataType) {
+		indexCreate: function(indexName, jsonPath, dataType, filterIndex) {
 			this.index[indexName] = [];
 			this._mappings[indexName] = {
 				path: jsonPath,
-				type: dataType
+				type: dataType,
+				filterIndex: filterIndex || false
 			};
 			for (var key in this._data) {
 				var value = explore(jsonPath, this._data[key]);
@@ -206,6 +182,9 @@
 				}
 				this.index[indexName].push(value);
 			}
+			if ( filterIndex ) {
+				this.filterIndex(indexName, jsonPath);
+			}
 		},
 		indexRebuild: function() {
 			this._keys = {};
@@ -216,13 +195,16 @@
 				this._keys[key] = this._index.length;
 				this._index.push(key);
 			}
+			for ( var indexName in this.filters ) {
+				this.filterIndex(indexName, this._mappings[indexName].path);
+			}
 
 		},
 		sort: function() {
 			var indexes = params(arguments);
 			var sorters = {};
 			var keys = this._keys;
-			var cache = false;//this.memory(indexes);
+			var cache = this.memory(indexes);
 
 
 			if (cache) {
@@ -251,8 +233,57 @@
 			}
 			return this;
 		},
+
+
+		filterIndex: function(name, jsonPath) {
+			var index = this.filters[name] = {};
+			for ( var key in this._data ) {
+				var value = explore(jsonPath, this._data[key]);
+				if ( value instanceof Array ) {
+					for ( var i = 0, l = value.length; i < l; i++ ) {
+						index[value[i]] = index[value[i]] || [];
+						index[value[i]].push(key);
+					}
+				} else {
+					index[value] = index[value] || [];
+					index[value].push(key);
+				}
+			}
+		},
+
+		filter2: function(indexes) {
+			var match = {};
+			for ( var indexName in indexes ) {
+				var search = params(indexes[indexName]);
+				for ( var i = 0, j = search.length; i < j; i++ ) {
+					var keys = this.filters[indexName][search[i]];
+					if ( !keys ) {
+						continue;
+					}
+					for ( var k = 0, l = keys.length; k < l; k++ ) {
+						match[keys[k]] = true;
+					}
+				}
+			}
+
+
+			// Setup filters by using keys from _index array
+			for ( var a = 0, key; undefined !== (key = this._index[a]); a++ ) {
+				this._filters[this._keys[key]] = match[key] || false;
+			}
+
+			return this;
+		},
+
+
+
+		/**
+		 * Do index based filtering
+		 * @param {Object} indexes Object with indexes name as the keys and filters as a value.
+		 * @returns {Model} Object instance
+		 */
 		filter: function(indexes) {
-			// Reset filters
+
 			var filtersIndexLength = this._filters.length,
 				filtersRepository = Model.filters,
 				filters, filter, index, i, j;
@@ -289,6 +320,7 @@
 				}
 
 			}
+
 			return this;
 		},
 		get: function() {
@@ -313,7 +345,7 @@
 			return buffer;
 		},
 		add: function(data, key) {
-			var i, l;
+			var i, l, mapping, value;
 			if ( key !== undefined ) {
 
 				key += '';
@@ -325,8 +357,12 @@
 				this._filters.push(true);
 
 				for (i in this.index) {
-					if(this._mappings[i]) {
-						this.index[i].push(explore(this._mappings[i].path, data));
+					if ( undefined !== ( mapping = this._mappings[i] ) ) {
+						value = explore(mapping.path, data);
+						this.index[i].push(value);
+						if ( mapping.filterIndex ) {
+							this.filters[i][value].push(key);
+						}
 					}
 				}
 			} else {
@@ -374,4 +410,4 @@
 	}
 
 
-}(window));
+}());

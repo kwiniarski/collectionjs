@@ -55,6 +55,9 @@ module.exports = function (grunt) {
 			all: {
 				src: ['tests/*Perf.js'],
 				dest: '.tmp/performance.csv'
+			},
+			filters: {
+				src: ['tests/*FiltersPerf.js']
 			}
 		},
 

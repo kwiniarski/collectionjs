@@ -3,19 +3,22 @@
         "requirejs": true,
         "require": true,
         "define": true,
-        
+
         "describe": true,
         "it": true,
         "expect": true,
         "beforeEach": true,
-        "afterEach": true
+        "afterEach": true,
+        "runs": true,
+        "waits": true,
+        "waitsFor": true
     },
 
     "node": true,
     "browser": true,
     "es3": false,
     "esnext": true,
-    
+
     "bitwise": true,
     "camelcase": true,
     "curly": true,

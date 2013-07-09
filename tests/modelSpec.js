@@ -456,5 +456,41 @@ define(['model','data/ipsum'], function(Model, ipsum) {
 
 		});
 
+		it('can create special filter index', function() {
+
+			items.indexCreate('company', 'company', 'string', true);
+
+			items.add(ipsum.result);
+			items.indexCreate('friends', 'friends.*.name', 'array', true);
+
+			expect(items.filters.friends).toEqual({
+				'Bailey Galbraith': ['0','5'],
+				'Maya Haig': ['0','5'],
+				'Madelyn Walkman': ['0','5'],
+				'Sophie Oldridge': ['1','6'],
+				'Madison Nash': ['1','6'],
+				'Brooke Ogden': ['1','6'],
+				'Sophia Hodges': ['2','7'],
+				'Chloe Goodman': ['2','7'],
+				'Sophia Gustman': ['2','7'],
+				'Autumn Ogden': ['3', '4', '8', '9'],
+				'Katherine Watson': ['3', '8'],
+				'Ella Goldman': ['3', '8'],
+				'Mariah Sheldon': ['4', '9'],
+				'Kaitlyn Warren': ['4', '9']
+			});
+
+			items.remove('8'); // Julia Hogart
+
+			expect(items.filters.company).toEqual({
+				'Aprama': ['0', '5'],
+				'Textiqua': ['1', '2', '6', '7'],
+				'Steganoconiche': ['3'],
+				'Titanirola': ['4', '9']
+			});
+
+
+		});
+
     });
 });
