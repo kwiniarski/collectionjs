@@ -342,6 +342,52 @@ define(['model','data/ipsum'], function(Model, ipsum) {
 
 		});
 
+		it('can filter records using filter2 (any)', function() {
+
+			items.indexCreate('friends','friends.*.name','array', true);
+			// Find all people who who has Autumn Ogden OR Ella Goldman OR Kaitlyn Warren as a friend
+			var res = items
+				.filter2({ friends: ['Autumn Ogden', 'Ella Goldman', 'Kaitlyn Warren'] })
+				.sort('friends')
+				.get('name', 'friends.*.name');
+
+			expect(res.length).toEqual(2);
+			expect(res).toEqual([
+				['Julia Hoggarth', ['Autumn Ogden', 'Katherine Watson', 'Ella Goldman']],
+				['Alexa Young', ['Mariah Sheldon', 'Autumn Ogden', 'Kaitlyn Warren']]
+			]);
+		});
+
+		it('can filter records using filter2 (all)', function() {
+
+			var res;
+
+			items.indexCreate('friends','friends.*.name','array', true);
+			items.indexCreate('company','company','string', true);
+			// Find all people who who has Autumn Ogden OR Ella Goldman OR Kaitlyn Warren as a friend
+			res = items
+				.all({
+					friends: ['Autumn Ogden', 'Katherine Watson', 'Ella Goldman'],
+					company: 'Steganoconiche'
+				})
+				.sort('friends')
+				.get('name', 'friends.*.name');
+
+			expect(res.length).toEqual(1);
+			expect(res).toEqual([
+				['Julia Hoggarth', ['Autumn Ogden', 'Katherine Watson', 'Ella Goldman']]
+			]);
+
+			res = items
+				.all({
+					friends: ['Autumn Ogden', 'Katherine Watson', 'Ella Goldman'],
+					company: 'Titanirola'
+				})
+				.get();
+
+			expect(res.length).toEqual(0);
+		});
+
 		it('can filter records using some', function() {
 
 			var res;

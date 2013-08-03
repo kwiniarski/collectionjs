@@ -27,6 +27,7 @@
 						collection.push(value);
 					}
 				}
+
 				return collection;
 
 
@@ -266,7 +267,6 @@
 				}
 			}
 
-
 			// Setup filters by using keys from _index array
 			for ( var a = 0, key; undefined !== (key = this._index[a]); a++ ) {
 				this._filters[this._keys[key]] = match[key] || false;
@@ -274,7 +274,74 @@
 
 			return this;
 		},
+		all: function(indexes) {
+			var match = {}, count = {};
+			var filterIndex = this._filters,
+				filtersIndexLength = filterIndex.length,
+				checksum = 0;
 
+
+
+			var indexName, search, i, j, k, key, keys;
+
+			for ( indexName in indexes ) {
+				checksum++;
+				count[indexName] = {};
+
+				search = params(indexes[indexName]);
+				for ( i = 0, j = search.length; i < j; i++ ) {
+					var keys = this.filters[indexName][search[i]];
+					if ( !keys ) {
+						continue;
+					}
+//						console.log(indexName, keys);
+					for ( k = 0, key; undefined !== (key = keys[k]); k++ ) {
+						key = this._keys[key];
+						count[indexName][key] = ( count[indexName][key] || 0 ) + 1;
+						if ( count[indexName][key] === search.length ) {
+//							match[indexName][key] = true;
+							match[key] = match[key] || [];
+							match[key].push(true);
+//							console.log(indexName, key);
+//							filterIndex[this._keys[key]] = true;
+						}
+
+
+//						if ( match[keys[k]] === true ) {
+//							continue;
+//						} else {
+//							match[keys[k]] = match[keys[k]] || 0;
+//							if ( match[keys[k]]++ === search.length ) {
+//								match[keys[k]] = true;
+//							}
+//						}
+					}
+				}
+			}
+			while(filtersIndexLength--) {
+				filterIndex[filtersIndexLength] = match[filtersIndexLength] && match[filtersIndexLength].length === checksum;
+			}
+//			for ( var m in match ) {
+//				for ( var s in match[m] ) {
+//					idx[s] = idx[s] || [];
+//					idx[s].push(match[m][s]);
+//				}
+//			}
+//			for ( var id in idx ) {
+//				if ( idx[id].length === checksum ) {
+//					this._filters[this._keys[id]] = true;
+//				}
+//			}
+
+//							console.log(count, match);
+//			console.log(idx);
+			// Setup filters by using keys from _index array
+//			for ( var a = 0, key; undefined !== (key = this._index[a]); a++ ) {
+//				this._filters[this._keys[key]] = match[key] === true || false;
+//			}
+
+			return this;
+		},
 
 
 		/**
@@ -284,37 +351,41 @@
 		 */
 		filter: function(indexes) {
 
-			var filtersIndexLength = this._filters.length,
+			var filterIndex = this._filters,
+				filtersIndexLength = filterIndex.length,
 				filtersRepository = Model.filters,
-				filters, filter, index, i, j;
+				filters, filter, indexName, index, i, j;
 
 			// Reset filters
 			while(filtersIndexLength--) {
-				this._filters[filtersIndexLength] = true;
+				filterIndex[filtersIndexLength] = true;
 			}
 
 			// Do filtering
-			for ( index in indexes ) {
+			for ( indexName in indexes ) {
 
-				filters = indexes[index];
+				filters = indexes[indexName];
+				index = this.index[indexName];
 
 				for ( filter in filters ) {
 					if ( filter === 'not' ) {
 						continue;
 					}
-					for ( i = 0, j; undefined !== (j = this.index[index][i]); i++ ) {
-						if ( this._filters[i] ) {
-							this._filters[i] = filtersRepository[filter](j, filters[filter]);
+					for ( i = 0, j; undefined !== (j = index[i]); i++ ) {
+						if ( !filterIndex[i] ) {
+							continue;
 						}
+						filterIndex[i] = filtersRepository[filter](j, filters[filter]);
 					}
 				}
 
 				if ( filters.not ) {
 					for ( filter in filters.not ) {
-						for ( i = 0, j; undefined !== (j = this.index[index][i]); i++ ) {
-							if ( this._filters[i] ) {
-								this._filters[i] = !filtersRepository[filter](j, filters.not[filter]);
+						for ( i = 0, j; undefined !== (j = index[i]); i++ ) {
+							if ( !filterIndex[i] ) {
+								continue;
 							}
+							filterIndex[i] = !filtersRepository[filter](j, filters.not[filter]);
 						}
 					}
 				}
