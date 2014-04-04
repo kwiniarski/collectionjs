@@ -347,7 +347,7 @@ define(['model','data/ipsum'], function(Model, ipsum) {
 			items.indexCreate('friends','friends.*.name','array', true);
 			// Find all people who who has Autumn Ogden OR Ella Goldman OR Kaitlyn Warren as a friend
 			var res = items
-				.filter2({ friends: ['Autumn Ogden', 'Ella Goldman', 'Kaitlyn Warren'] })
+				.any({ friends: ['Autumn Ogden', 'Ella Goldman', 'Kaitlyn Warren'] })
 				.sort('friends')
 				.get('name', 'friends.*.name');
 

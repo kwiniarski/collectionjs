@@ -10,6 +10,10 @@
 	slice = Array.prototype.slice,
 	split = /\s*,\s*/g,
 
+	ok = function(expression) {
+		return typeof expression !== 'undefined';
+	},
+
 	explore = function(path, object, collection) {
 
 		if (path.indexOf('.') === -1) {
@@ -65,15 +69,15 @@
 		}
 	},
 
-	matcher = function(values, tokens, mode, fn) {
+	matcher = function(values, tokens, mode, callback) {
 
 		var
 
 		matches = 0,
 		test = params(values),
-		list = params(tokens);
+		list = params(tokens),
 
-		fn = fn || equals;
+		fn = callback || equals;
 
 		for ( var k = 0, l = test.length; k < l; k++ ) {
 			for ( var i = 0, j = list.length; i < j; i++ ) {
@@ -139,12 +143,33 @@
 		contains: function(values, tokens) {
 			return matcher(values, tokens, MATCH_ANY, compare);
 		},
+		/**
+		 * Returns true when all tokens are contained in values and both are
+		 * equal in length. This is different then equal, because order of items
+		 * in tokens and values is not maintained.
+		 * @param {type} values
+		 * @param {type} tokens
+		 * @returns {Boolean}
+		 */
 		all: function(values, tokens) {
 			return matcher(values, tokens, MATCH_ALL);
 		},
+		/**
+		 * Returns true when at least one token can be found in values.
+		 * @param {type} values
+		 * @param {type} tokens
+		 * @returns {Boolean}
+		 */
 		any: function(values, tokens) {
 			return matcher(values, tokens, MATCH_ANY);
 		},
+		/**
+		 * Returns true when some tokens are contained in values and tokens
+		 * do not contain any records that can not be found in values.
+		 * @param {type} values
+		 * @param {type} tokens
+		 * @returns {Boolean}
+		 */
 		some: function(values, tokens) {
 			return matcher(values, tokens, MATCH_SOME);
 		}
@@ -212,7 +237,7 @@
 				this._index = cache;
 			} else {
 
-				for (var i = 0, j; undefined !== (j = indexes[i]); i++) {
+				for (var i = 0, j; ok(j = indexes[i]); i++) {
 					sorters[j] = {
 						engine: Model.sorters[this._mappings[j].type],
 						values: this.index[j]
@@ -252,7 +277,7 @@
 			}
 		},
 
-		filter2: function(indexes) {
+		any: function(indexes) {
 			var match = {};
 			for ( var indexName in indexes ) {
 				var search = params(indexes[indexName]);
@@ -268,19 +293,18 @@
 			}
 
 			// Setup filters by using keys from _index array
-			for ( var a = 0, key; undefined !== (key = this._index[a]); a++ ) {
+			for ( var a = 0, key; ok(key = this._index[a]); a++ ) {
 				this._filters[this._keys[key]] = match[key] || false;
 			}
 
 			return this;
 		},
+
 		all: function(indexes) {
 			var match = {}, count = {};
 			var filterIndex = this._filters,
 				filtersIndexLength = filterIndex.length,
 				checksum = 0;
-
-
 
 			var indexName, search, i, j, k, key, keys;
 
@@ -290,59 +314,25 @@
 
 				search = params(indexes[indexName]);
 				for ( i = 0, j = search.length; i < j; i++ ) {
-					var keys = this.filters[indexName][search[i]];
+					keys = this.filters[indexName][search[i]];
 					if ( !keys ) {
 						continue;
 					}
-//						console.log(indexName, keys);
-					for ( k = 0, key; undefined !== (key = keys[k]); k++ ) {
+					for ( k = 0; ok(key = keys[k]); k++ ) {
 						key = this._keys[key];
 						count[indexName][key] = ( count[indexName][key] || 0 ) + 1;
 						if ( count[indexName][key] === search.length ) {
-//							match[indexName][key] = true;
 							match[key] = match[key] || [];
 							match[key].push(true);
-//							console.log(indexName, key);
-//							filterIndex[this._keys[key]] = true;
 						}
-
-
-//						if ( match[keys[k]] === true ) {
-//							continue;
-//						} else {
-//							match[keys[k]] = match[keys[k]] || 0;
-//							if ( match[keys[k]]++ === search.length ) {
-//								match[keys[k]] = true;
-//							}
-//						}
 					}
 				}
 			}
 			while(filtersIndexLength--) {
 				filterIndex[filtersIndexLength] = match[filtersIndexLength] && match[filtersIndexLength].length === checksum;
 			}
-//			for ( var m in match ) {
-//				for ( var s in match[m] ) {
-//					idx[s] = idx[s] || [];
-//					idx[s].push(match[m][s]);
-//				}
-//			}
-//			for ( var id in idx ) {
-//				if ( idx[id].length === checksum ) {
-//					this._filters[this._keys[id]] = true;
-//				}
-//			}
-
-//							console.log(count, match);
-//			console.log(idx);
-			// Setup filters by using keys from _index array
-//			for ( var a = 0, key; undefined !== (key = this._index[a]); a++ ) {
-//				this._filters[this._keys[key]] = match[key] === true || false;
-//			}
-
 			return this;
 		},
-
 
 		/**
 		 * Do index based filtering
@@ -371,7 +361,7 @@
 					if ( filter === 'not' ) {
 						continue;
 					}
-					for ( i = 0, j; undefined !== (j = index[i]); i++ ) {
+					for ( i = 0, j; ok(j = index[i]); i++ ) {
 						if ( !filterIndex[i] ) {
 							continue;
 						}
@@ -381,7 +371,7 @@
 
 				if ( filters.not ) {
 					for ( filter in filters.not ) {
-						for ( i = 0, j; undefined !== (j = index[i]); i++ ) {
+						for ( i = 0, j; ok(j = index[i]); i++ ) {
 							if ( !filterIndex[i] ) {
 								continue;
 							}
@@ -397,11 +387,11 @@
 		get: function() {
 			var buffer = [];
 			var properties = params(arguments);
-			for (var i = 0, j; undefined !== (j = this._index[i]); i++) {
+			for (var i = 0, j; ok(j = this._index[i]); i++) {
 				if (this._filters[this._keys[j]]) {
 					if ( properties.length > 1 ) {
 						var props = [];
-						for(var k = 0, l; undefined !== (l = properties[k]); k++) {
+						for(var k = 0, l; ok(l = properties[k]); k++) {
 
 							props.push(explore(l, this._data[j]));
 						}
@@ -428,7 +418,7 @@
 				this._filters.push(true);
 
 				for (i in this.index) {
-					if ( undefined !== ( mapping = this._mappings[i] ) ) {
+					if (typeof (mapping = this._mappings[i]) !== undefined ) {
 						value = explore(mapping.path, data);
 						this.index[i].push(value);
 						if ( mapping.filterIndex ) {
@@ -450,8 +440,8 @@
 		},
 		remove: function() {
 			var index, keys = params(arguments);
-			for ( var i = 0, id; undefined !== ( id = keys[i] ); i++ ) {
-				if ( undefined !== ( index = this._keys[id] ) ) {
+			for ( var i = 0, id; ok( id = keys[i] ); i++ ) {
+				if ( ok( index = this._keys[id] ) ) {
 					delete this._data[id];
 					delete this._keys[id];
 
