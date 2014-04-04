@@ -418,7 +418,7 @@
 				this._filters.push(true);
 
 				for (i in this.index) {
-					if (typeof (mapping = this._mappings[i]) !== undefined ) {
+					if (ok(mapping = this._mappings[i])) {
 						value = explore(mapping.path, data);
 						this.index[i].push(value);
 						if ( mapping.filterIndex ) {
