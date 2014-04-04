@@ -94,9 +94,12 @@
 
 	function Model() {
 		var memory = {};
+
+		/**
+		 * Storage object for all added records (items).
+		 * @type Object
+		 */
 		this._data = {};
-		this.index = {},
-		this.filters = {},
 
 		/*
 		 * Index mappings (index name to used JSON path).
@@ -106,20 +109,47 @@
 		this._mappings = {};
 
 		/**
-		 * Primary index with keys.
+		 * Keys index. It is used to keep order of items.
 		 * Only this index is modified while sorting.
 		 * @type Array
 		 */
 		this._index = [];
 
 		/**
-		 * Primary index mappings (key to numeric index in _index).
+		 * Key mappings index (key to numeric index in _index).
 		 * Used to get key position in _index.
-		 * @type Array
+		 * @type Object
 		 */
 		this._keys = {};
+
+		/**
+		 * Filtering index. Keeps information about filtering state of an item.
+		 * This index is modified while filtering.
+		 * @type Array
+		 */
 		this._filters = [];
 
+		/**
+		 * Object for storing indexes created by createIndex method.
+		 * This simple index stores extracts of an collection item under item's
+		 * index in _index array for faster access.
+		 * @example {"myIndex": ["blue", "red"], "otherIndex": [[12, 16], [1, 23]]}
+		 * @type Object
+		 */
+		this.index = {};
+
+		/**
+		 * Object for storing indexes created by createIndex method with
+		 * filterIndex flag set to true.
+		 * This object is used mainly by #any and #all methods to speed
+		 * up filtering. It is not used with older #filter method.
+		 * Created filter index consists of records, where key is unique value
+		 * from collection item (extracted with path expression) and its value
+		 * is an array of collection item keys.
+		 * @example {"myIndex": {"someValue": ["1", "5"], "otherValue": ["1", "6", "8"]}}
+		 * @type Object
+		 */
+		this.filters = {};
 
 
 		this.memorize = function(key, value) {
@@ -131,7 +161,6 @@
 		this.resetMemory = function() {
 			memory = {};
 		};
-//		this.add(data);
 	}
 	Model.filters = {
 		min: function(value, min) {
@@ -305,6 +334,7 @@
 			var filterIndex = this._filters,
 				filtersIndexLength = filterIndex.length,
 				checksum = 0;
+
 
 			var indexName, search, i, j, k, key, keys;
 
