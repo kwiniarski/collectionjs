@@ -1,4 +1,4 @@
 node_modules
 /.tmp
-/nbproject
-/tests/various*.js
+/.coverage
+/.directory
