@@ -14,7 +14,7 @@ requirejs.config({
 	baseUrl: '/base/src',
 
 	paths: {
-		'data': '../tests/data'
+		'fixtures': '../tests/fixtures'
 	},
 
     // ask Require.js to load these files (all our tests)
