@@ -1,10 +1,8 @@
-# iota [![Build Status](https://travis-ci.org/kwiniarski/iota.png)](https://travis-ci.org/kwiniarski/iota "Build Status") #
+# CollectionJS [![Build Status](https://travis-ci.org/kwiniarski/collectionjs.png)](https://travis-ci.org/kwiniarski/collectionjs "Build Status") #
 
-> NOTE: iota is in alpha version. Use on production on your own risk.
+> NOTE: CollectionJS is in alpha version. Use on production on your own risk.
 
-iota is a set of small JavaScript modules designed for speed, extendibility and modular applications development. Compatible with Nodejs, RequireJS and jQuery.
-
-iota is the smallest letter in the Greek alphabet and so it reflects the main idea of this collection of modules. Each file should be as small as it is possible.
+CollectionJS is a small library that wraps any set of JavaScript objects and makes it sortable and searchable. The main goal of CollectionJS is to make this process as fast as possible. This is archived through many different optimizations and indexes, that CollectionJS will make for you.
 
 ## Installation ##
 
@@ -12,25 +10,17 @@ Not available yet.
 
 ## Usage ##
 
-iota comes with several modules.
-
-### model ###
-
-This module is responsible for JSON data manipulation. Following iota's main idea, this module does not serialize or parse JSON. It only takes JSON object as argument, and returns new filtered and sorted JSON object.
-
-### templates ###
-
 Not available yet.
 
 ## Testing ##
 
-See https://travis-ci.org/kwiniarski/iota.
+See https://travis-ci.org/kwiniarski/collectionjs.
 
 ## Contributing ##
 
 ## License ##
 
-Copyright (c) 2013, Krzysztof Winiarski<br/>
+Copyright (c) 2013-2014, Krzysztof Winiarski<br/>
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
