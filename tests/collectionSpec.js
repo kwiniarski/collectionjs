@@ -1,23 +1,18 @@
 'use strict';
-define(['model','fixtures/ipsum'], function(Model, ipsum) {
+define(['collection','fixtures/ipsum'], function(Collection, ipsum) {
 
     describe('Model working on array', function() {
 
 		var items;
 
 		beforeEach(function(){
-			items = new Model();
+			items = new Collection();
 			items.add(ipsum.result);
 		});
 
 		afterEach(function(){
 			items = null;
 		});
-
-        it('has items', function() {
-            expect(items._data).toEqual(ipsum.result);
-            expect(items.get().length).toEqual(ipsum.total);
-        });
 
         it('can add and remove items', function() {
 			var total = ipsum.total;
@@ -254,20 +249,20 @@ define(['model','fixtures/ipsum'], function(Model, ipsum) {
 		it('can filter records using all', function() {
 
 			// Quick tests
-			expect(Model.filters.all([1,2,3],[1,2,3])).toBeTruthy();
-			expect(Model.filters.all([1,2,3],[1,2,3,4])).toBeFalsy();
-			expect(Model.filters.all([1,2,3],[1,2])).toBeFalsy();
+			expect(Collection.filters.all([1,2,3],[1,2,3])).toBeTruthy();
+			expect(Collection.filters.all([1,2,3],[1,2,3,4])).toBeFalsy();
+			expect(Collection.filters.all([1,2,3],[1,2])).toBeFalsy();
 
 		});
 
 		it('can filter records using any', function() {
 
 			// Quick tests
-			expect(Model.filters.any([1,2,3],[1,2,3])).toBeTruthy();
-			expect(Model.filters.any([1,2,3],[1,2,3,4])).toBeTruthy();
-			expect(Model.filters.any([1,2,3],[1,2])).toBeTruthy();
-			expect(Model.filters.any([1,2,3],[4,5,6])).toBeFalsy();
-			expect(Model.filters.any([1,2,3],[3,4,5,6])).toBeTruthy();
+			expect(Collection.filters.any([1,2,3],[1,2,3])).toBeTruthy();
+			expect(Collection.filters.any([1,2,3],[1,2,3,4])).toBeTruthy();
+			expect(Collection.filters.any([1,2,3],[1,2])).toBeTruthy();
+			expect(Collection.filters.any([1,2,3],[4,5,6])).toBeFalsy();
+			expect(Collection.filters.any([1,2,3],[3,4,5,6])).toBeTruthy();
 
 			var res;
 			/**
@@ -393,11 +388,11 @@ define(['model','fixtures/ipsum'], function(Model, ipsum) {
 			var res;
 
 			// Quick tests
-			expect(Model.filters.some([1,2,3],[1,2,3])).toBeTruthy();
-			expect(Model.filters.some([1,2,3],[1,2,3,4])).toBeFalsy();
-			expect(Model.filters.some([1,2,3],[1,2])).toBeTruthy();
-			expect(Model.filters.some([1,2,3],[4,5,6])).toBeFalsy();
-			expect(Model.filters.some([1,2,3],[3,4,5,6])).toBeFalsy();
+			expect(Collection.filters.some([1,2,3],[1,2,3])).toBeTruthy();
+			expect(Collection.filters.some([1,2,3],[1,2,3,4])).toBeFalsy();
+			expect(Collection.filters.some([1,2,3],[1,2])).toBeTruthy();
+			expect(Collection.filters.some([1,2,3],[4,5,6])).toBeFalsy();
+			expect(Collection.filters.some([1,2,3],[3,4,5,6])).toBeFalsy();
 
 			// Test on object
 			items.indexCreate('friends','friends.*.name','array');

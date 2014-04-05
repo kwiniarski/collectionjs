@@ -1,7 +1,7 @@
-var Model = require('../src/model.js');
-var data = require('./data/ipsum.js');
+var Collection = require('../src/collection.js');
+var data = require('../tests/fixtures/ipsum.js');
 
-var test = new Model();
+var test = new Collection();
 test.add(data.result);
 test.indexCreate('friends', 'friends.*.name', 'array', true);
 test.indexCreate('tags', 'tags', 'array', true);

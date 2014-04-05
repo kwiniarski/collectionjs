@@ -92,7 +92,7 @@
 		return false;
 	};
 
-	function Model() {
+	function Collection() {
 		var memory = {};
 
 		/**
@@ -162,7 +162,7 @@
 			memory = {};
 		};
 	}
-	Model.filters = {
+	Collection.filters = {
 		min: function(value, min) {
 			return value > min;
 		},
@@ -203,7 +203,7 @@
 			return matcher(values, tokens, MATCH_SOME);
 		}
 	};
-	Model.sorters = {
+	Collection.sorters = {
 		number: function(a, b) {
 			return a - b;
 		},
@@ -216,7 +216,7 @@
 		}
 	};
 
-	Model.prototype = {
+	Collection.prototype = {
 		indexCreate: function(indexName, jsonPath, dataType, filterIndex) {
 			this.index[indexName] = [];
 			this._mappings[indexName] = {
@@ -268,7 +268,7 @@
 
 				for (var i = 0, j; ok(j = indexes[i]); i++) {
 					sorters[j] = {
-						engine: Model.sorters[this._mappings[j].type],
+						engine: Collection.sorters[this._mappings[j].type],
 						values: this.index[j]
 					};
 				}
@@ -373,7 +373,7 @@
 
 			var filterIndex = this._filters,
 				filtersIndexLength = filterIndex.length,
-				filtersRepository = Model.filters,
+				filtersRepository = Collection.filters,
 				filters, filter, indexName, index, i, j;
 
 			// Reset filters
@@ -488,16 +488,16 @@
 
 
 	if ( typeof module === 'object' && module && typeof module.exports === 'object' ) {
-		module.exports = Model;
+		module.exports = Collection;
 	} else {
 		if ( define && typeof define === 'function' && define.amd ) {
-			define('model', [], function() {
-				return Model;
+			define('collection', [], function() {
+				return Collection;
 			});
 		}
 	}
 	if ( typeof window === 'object' && typeof window.document === 'object' ) {
-		window.Model = Model;
+		window.Collection = Collection;
 	}
 
 
