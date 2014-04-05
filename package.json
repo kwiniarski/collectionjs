@@ -1,8 +1,8 @@
 {
-  "name": "iota",
+  "name": "CollectionJS",
   "version": "0.0.1",
   "author": "Krzysztof Winiarski <winiarski.krzysztof@gmail.com>",
-  "description": "iota is a set of small JavaScript modules designed for speed, extendibility and modular applications development. Compatible with Nodejs, RequireJS and jQuery.",
+  "description": "CollectionJS is a small library that wraps any set of JavaScript objects and makes it sortable and searchable. The main goal of CollectionJS is to make this process as fast as possible. This is archived through many different optimizations and indexes, that CollectionJS will make for you.",
   "contributors": [
     {
       "name": "Krzysztof Winiarski",
@@ -19,8 +19,7 @@
     "jquery",
     "modules",
     "json",
-    "model",
-    "templates"
+    "model"
   ],
   "dependencies": {},
   "devDependencies": {
@@ -28,10 +27,16 @@
     "grunt-contrib-jshint": "~0.5.4",
     "grunt-contrib-watch": "~0.4.4",
     "grunt-contrib-requirejs": "~0.4.1",
-    "grunt-karma": "~0.4.4",
     "matchdep": "~0.1.2",
-    "karma": "~0.8.6",
-    "grunt-benchmark": "~0.2.0"
+    "grunt-benchmark": "~0.2.0",
+    "karma": "~0.12.3",
+    "grunt-karma": "~0.8.2",
+    "karma-spec-reporter": "0.0.12",
+    "karma-jasmine": "~0.1.5",
+    "requirejs": "~2.1.11",
+    "karma-requirejs": "~0.2.1",
+    "karma-phantomjs-launcher": "~0.1.4",
+    "karma-coverage": "~0.2.1"
   },
   "engines": {
     "node": ">=0.10.0"
