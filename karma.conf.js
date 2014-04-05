@@ -14,7 +14,7 @@ files = [
   REQUIRE_ADAPTER,
 
   {pattern: 'src/**/*.js', included: false},
-  {pattern: 'tests/data/*.js', included: false},
+  {pattern: 'tests/fixtures/*.js', included: false},
   {pattern: 'tests/**/*Spec.js', included: false},
 
   'tests/init.js'
@@ -22,9 +22,7 @@ files = [
 
 
 // list of files to exclude
-exclude = [
-	'tests/*Perf.js'
-];
+exclude = [];
 
 
 // test results reporter to use

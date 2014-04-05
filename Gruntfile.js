@@ -53,7 +53,7 @@ module.exports = function (grunt) {
 				displayResults: true
 			},
 			all: {
-				src: ['tests/*Perf.js'],
+				src: ['perf/*Perf.js'],
 				dest: '.tmp/performance.csv'
 			},
 			filters: {
