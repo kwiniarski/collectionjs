@@ -203,6 +203,7 @@
 			return matcher(values, tokens, MATCH_SOME);
 		}
 	};
+	
 	Collection.sorters = {
 		number: function(a, b) {
 			return a - b;
@@ -329,37 +330,34 @@
 			return this;
 		},
 
-		all: function(indexes) {
-			var match = {}, count = {};
-			var filterIndex = this._filters,
-				filtersIndexLength = filterIndex.length,
-				checksum = 0;
+		all: function (indexes) {
+			var match = {}, count = {},
+				filtersIndexLength = this._filters.length,
+				checksum = 0,
+				indexName, searchTokens, searchValues, i, token, k, key, keys;
 
-
-			var indexName, search, i, j, k, key, keys;
-
-			for ( indexName in indexes ) {
+			for (indexName in indexes) {
 				checksum++;
 				count[indexName] = {};
-
-				search = params(indexes[indexName]);
-				for ( i = 0, j = search.length; i < j; i++ ) {
-					keys = this.filters[indexName][search[i]];
-					if ( !keys ) {
-						continue;
-					}
-					for ( k = 0; ok(key = keys[k]); k++ ) {
-						key = this._keys[key];
-						count[indexName][key] = ( count[indexName][key] || 0 ) + 1;
-						if ( count[indexName][key] === search.length ) {
-							match[key] = match[key] || [];
-							match[key].push(true);
+				searchValues = this.filters[indexName];
+				searchTokens = params(indexes[indexName]);
+				for (i = 0; ok(token = searchTokens[i]); i++) {
+					// get keys of items associated with search value
+					keys = searchValues[token];
+					if (keys) {
+						// loop through item keys
+						for (k = 0; ok(key = keys[k]); k++) {
+							count[indexName][key] = (count[indexName][key] || 0) + 1;
+							if (count[indexName][key] === searchTokens.length) {
+								match[key] = (match[key] || 0) + 1;
+								continue;
+							}
 						}
 					}
 				}
 			}
-			while(filtersIndexLength--) {
-				filterIndex[filtersIndexLength] = match[filtersIndexLength] && match[filtersIndexLength].length === checksum;
+			while (filtersIndexLength--) {
+				this._filters[filtersIndexLength] = (match[this._index[filtersIndexLength]] === checksum);
 			}
 			return this;
 		},
