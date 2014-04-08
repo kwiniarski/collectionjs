@@ -253,6 +253,21 @@ define(['collection','fixtures/ipsum'], function(Collection, ipsum) {
 			expect(Collection.filters.all([1,2,3],[1,2,3,4])).toBeFalsy();
 			expect(Collection.filters.all([1,2,3],[1,2])).toBeFalsy();
 
+			var res;
+
+			// Create index on age
+			items.indexCreate('name','name','string', true);
+			items.indexCreate('friends','friends.*.name','array', true);
+
+			res = items
+				.filterWithIndex({ friends: { newAll: ['Sophie Oldridge', 'Madison Nash', 'Brooke Ogden'] } })
+				.sort('name')
+				.get('name');
+
+			expect(res.length).toEqual(1);
+			expect(res).toEqual(['Gabriella Day']);
+
+
 		});
 
 		it('can filter records using any', function() {

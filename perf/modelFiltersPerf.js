@@ -27,6 +27,17 @@ module.exports = {
 				friends: ['Autumn Ogden', 'Maya Haig'],
 				company: ['Textiqua','Steganoconiche','Titanirola']
 			});
+		},
+
+		'#filterWithIndex method': function() {
+			test.filterWithIndex({
+				friends: {
+					newAll: ['Autumn Ogden', 'Maya Haig']
+				},
+				company: {
+					newAll: ['Textiqua','Steganoconiche','Titanirola']
+				}
+			});
 		}
 	}
 };

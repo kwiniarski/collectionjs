@@ -201,9 +201,16 @@
 		 */
 		some: function(values, tokens) {
 			return matcher(values, tokens, MATCH_SOME);
+		},
+		newAll: function(indexName, itemKey, searchTokens) {
+			this.count[indexName][itemKey] = (this.count[indexName][itemKey] || 0) + 1;
+			if (this.count[indexName][itemKey] === searchTokens.length) {
+				this.match[itemKey] = (this.match[itemKey] || 0) + 1;
+			}
+//			return this;
 		}
 	};
-	
+
 	Collection.sorters = {
 		number: function(a, b) {
 			return a - b;
@@ -332,7 +339,17 @@
 
 		all: function (indexes) {
 			var match = {}, count = {},
+				/**
+				 * Number of items.
+				 * @type Number
+				 */
 				filtersIndexLength = this._filters.length,
+				/**
+				 * Number of all indexes which are used for filtering. In the end, function checks if the item matches all
+				 * indexes by checking number of successful matches with total number of indexes passed to the function.
+				 * Only when they are equal item can be marked as valid.
+				 * @type Number
+				 */
 				checksum = 0,
 				indexName, searchTokens, searchValues, i, token, k, key, keys;
 
@@ -350,7 +367,6 @@
 							count[indexName][key] = (count[indexName][key] || 0) + 1;
 							if (count[indexName][key] === searchTokens.length) {
 								match[key] = (match[key] || 0) + 1;
-								continue;
 							}
 						}
 					}
@@ -412,6 +428,59 @@
 
 			return this;
 		},
+
+
+		/**
+		 * Method to replace #filter. It is based on #any method.
+		 * The goal is to keep #filter schema with #all performance.
+		 * @param {type} indexes
+		 * @param {type} mode
+		 * @returns {_L2.Collection.prototype}
+		 */
+		filterWithIndex: function (args) {
+			var ctx = { match: {}, count: {}, checksum: 0 },
+				/**
+				 * Number of items.
+				 * @type Number
+				 */
+				totalItems = this._filters.length,
+				/**
+				 * Number of all indexes which are used for filtering. In the end, function checks if the item matches all
+				 * indexes by checking number of successful matches with total number of indexes passed to the function.
+				 * Only when they are equal item can be marked as valid.
+				 * @type Number
+				 */
+//				checksum = 0,
+				indexName, searchTokens, searchValues, i, token, k, itemKey, keys,
+				filterName, filterFn;
+
+			for (indexName in args) {
+				ctx.checksum++;
+				ctx.count[indexName] = {};
+				// get values from filter index
+				searchValues = this.filters[indexName];
+				for (filterName in args[indexName]) {
+					// get search tokens from provided arguments
+					searchTokens = params(args[indexName][filterName]);
+					filterFn = Collection.filters[filterName];
+					for (i = 0; ok(token = searchTokens[i]); i++) {
+						// get keys of items associated with search value
+						keys = searchValues[token];
+						if (keys) {
+							// loop through item keys
+							for (k = 0; ok(itemKey = keys[k]); k++) {
+								filterFn.call(ctx, indexName, itemKey, searchTokens);
+							}
+						}
+					}
+				}
+			}
+			while (totalItems--) {
+				this._filters[totalItems] = (ctx.match[this._index[totalItems]] === ctx.checksum);
+			}
+			return this;
+		},
+
 		get: function() {
 			var buffer = [];
 			var properties = params(arguments);
