@@ -1,7 +1,7 @@
 'use strict';
 define(['collection','fixtures/ipsum'], function(Collection, ipsum) {
 
-    describe('Model working on array', function() {
+    describe('CollectionJS', function() {
 
 		var items;
 
@@ -14,7 +14,7 @@ define(['collection','fixtures/ipsum'], function(Collection, ipsum) {
 			items = null;
 		});
 
-        it('can add and remove items', function() {
+        it('should maintain indexes', function() {
 			var total = ipsum.total;
 
 			expect(items.get().length).toEqual(total);
