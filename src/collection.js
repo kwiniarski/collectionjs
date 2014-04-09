@@ -10,10 +10,6 @@
 	slice = Array.prototype.slice,
 	split = /\s*,\s*/g,
 
-	ok = function(expression) {
-		return typeof expression !== 'undefined';
-	},
-
 	explore = function(path, object, collection) {
 
 		if (path.indexOf('.') === -1) {
@@ -274,10 +270,11 @@
 				this._index = cache;
 			} else {
 
-				for (var i = 0, j; ok(j = indexes[i]); i++) {
-					sorters[j] = {
-						engine: Collection.sorters[this._mappings[j].type],
-						values: this.index[j]
+				for (var i = 0, j = indexes.length; i < j; i++) {
+					var k = indexes[i];
+					sorters[k] = {
+						engine: Collection.sorters[this._mappings[k].type],
+						values: this.index[k]
 					};
 				}
 
@@ -330,7 +327,8 @@
 			}
 
 			// Setup filters by using keys from _index array
-			for ( var a = 0, key; ok(key = this._index[a]); a++ ) {
+			for ( var a = 0, b = this._index.length; a < b; a++ ) {
+				var key = this._index[a];
 				this._filters[this._keys[key]] = match[key] || false;
 			}
 
@@ -351,19 +349,21 @@
 				 * @type Number
 				 */
 				checksum = 0,
-				indexName, searchTokens, searchValues, i, token, k, key, keys;
+				indexName, searchTokens, searchValues, i, j, token, k, l, key, keys;
 
 			for (indexName in indexes) {
 				checksum++;
 				count[indexName] = {};
 				searchValues = this.filters[indexName];
 				searchTokens = params(indexes[indexName]);
-				for (i = 0; ok(token = searchTokens[i]); i++) {
+				for (i = 0, j = searchTokens.length; i < j; i++) {
 					// get keys of items associated with search value
+					token = searchTokens[i];
 					keys = searchValues[token];
 					if (keys) {
 						// loop through item keys
-						for (k = 0; ok(key = keys[k]); k++) {
+						for (k = 0, l = keys.length; k < l; k++) {
+							key = keys[k];
 							count[indexName][key] = (count[indexName][key] || 0) + 1;
 							if (count[indexName][key] === searchTokens.length) {
 								match[key] = (match[key] || 0) + 1;
@@ -405,21 +405,21 @@
 					if ( filter === 'not' ) {
 						continue;
 					}
-					for ( i = 0, j; ok(j = index[i]); i++ ) {
+					for ( i = 0, j = index.length; i < j ; i++ ) {
 						if ( !filterIndex[i] ) {
 							continue;
 						}
-						filterIndex[i] = filtersRepository[filter](j, filters[filter]);
+						filterIndex[i] = filtersRepository[filter](index[i], filters[filter]);
 					}
 				}
 
 				if ( filters.not ) {
 					for ( filter in filters.not ) {
-						for ( i = 0, j; ok(j = index[i]); i++ ) {
+						for ( i = 0, j = index.length; i < j ; i++ ) {
 							if ( !filterIndex[i] ) {
 								continue;
 							}
-							filterIndex[i] = !filtersRepository[filter](j, filters.not[filter]);
+							filterIndex[i] = !filtersRepository[filter](index[i], filters.not[filter]);
 						}
 					}
 				}
@@ -451,7 +451,7 @@
 				 * @type Number
 				 */
 //				checksum = 0,
-				indexName, searchTokens, searchValues, i, token, k, itemKey, keys,
+				indexName, searchTokens, searchValues, i, j, token, k, l, itemKey, keys,
 				filterName, filterFn;
 
 			for (indexName in args) {
@@ -463,13 +463,14 @@
 					// get search tokens from provided arguments
 					searchTokens = params(args[indexName][filterName]);
 					filterFn = Collection.filters[filterName];
-					for (i = 0; ok(token = searchTokens[i]); i++) {
+					for (i = 0, j = searchTokens.length; i < j ; i++) {
 						// get keys of items associated with search value
-						keys = searchValues[token];
+//						token = searchTokens[i];
+						keys = searchValues[searchTokens[i]];
 						if (keys) {
 							// loop through item keys
-							for (k = 0; ok(itemKey = keys[k]); k++) {
-								filterFn.call(ctx, indexName, itemKey, searchTokens);
+							for (k = 0, l = keys.length; k < l; k++) {
+								filterFn.call(ctx, indexName, keys[k], searchTokens);
 							}
 						}
 					}
@@ -484,19 +485,20 @@
 		get: function() {
 			var buffer = [];
 			var properties = params(arguments);
-			for (var i = 0, j; ok(j = this._index[i]); i++) {
-				if (this._filters[this._keys[j]]) {
+			var totalItems = this._index.length;
+			for (var i = 0; i < totalItems; i++) {
+				var index = this._index[i];
+				if (this._filters[this._keys[index]]) {
 					if ( properties.length > 1 ) {
 						var props = [];
-						for(var k = 0, l; ok(l = properties[k]); k++) {
-
-							props.push(explore(l, this._data[j]));
+						for(var k = 0, l = properties.length; k < l ; k++) {
+							props.push(explore(properties[k], this._data[index]));
 						}
 						buffer.push(props);
 					} else if ( properties.length === 1 ) {
-						buffer.push(explore(properties[0], this._data[j]));
+						buffer.push(explore(properties[0], this._data[index]));
 					} else {
-						buffer.push(this._data[j]);
+						buffer.push(this._data[index]);
 					}
 				}
 			}
@@ -504,7 +506,7 @@
 		},
 		add: function(data, key) {
 			var i, l, mapping, value;
-			if ( key !== undefined ) {
+			if ( typeof key !== 'undefined' ) {
 
 				key += '';
 
@@ -515,7 +517,8 @@
 				this._filters.push(true);
 
 				for (i in this.index) {
-					if (ok(mapping = this._mappings[i])) {
+					mapping = this._mappings[i];
+					if (typeof mapping !== 'undefined') {
 						value = explore(mapping.path, data);
 						this.index[i].push(value);
 						if ( mapping.filterIndex ) {
@@ -536,11 +539,13 @@
 			}
 		},
 		remove: function() {
-			var index, keys = params(arguments);
-			for ( var i = 0, id; ok( id = keys[i] ); i++ ) {
-				if ( ok( index = this._keys[id] ) ) {
-					delete this._data[id];
-					delete this._keys[id];
+			var key, index, keys = params(arguments);
+			for ( var i = 0, j = keys.length; i < j; i++ ) {
+				key = keys[i];
+				index = this._keys[key];
+				if (typeof index !== 'undefined') {
+					delete this._data[key];
+					delete this._keys[key];
 
 					this._filters.splice(index, 1);
 					for ( var name in this.index ) {
