@@ -43,6 +43,6 @@
   },
   "license": "BSD",
   "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run --browsers PhantomJS"
+    "test": "./node_modules/.bin/karma start --reporters progress"
   }
 }
