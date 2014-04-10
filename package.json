@@ -11,7 +11,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/kwiniarski/iota.git"
+    "url": "https://github.com/kwiniarski/collectionjs.git"
   },
   "keywords": [
     "node",
@@ -23,17 +23,17 @@
   ],
   "dependencies": {},
   "devDependencies": {
+    "matchdep": "~0.1.2",
+    "requirejs": "~2.1.11",
     "grunt": "~0.4.1",
     "grunt-contrib-jshint": "~0.5.4",
     "grunt-contrib-watch": "~0.4.4",
     "grunt-contrib-requirejs": "~0.4.1",
-    "matchdep": "~0.1.2",
     "grunt-benchmark": "~0.2.0",
-    "karma": "~0.12.3",
     "grunt-karma": "~0.8.2",
+    "karma": "~0.12.3",
     "karma-spec-reporter": "0.0.12",
     "karma-jasmine": "~0.1.5",
-    "requirejs": "~2.1.11",
     "karma-requirejs": "~0.2.1",
     "karma-phantomjs-launcher": "~0.1.4",
     "karma-coverage": "~0.2.1",
@@ -44,6 +44,6 @@
   },
   "license": "BSD",
   "scripts": {
-    "test": "./node_modules/.bin/karma start --reporters progress"
+    "test": "karma start --reporters progress"
   }
 }
